@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1016528017147",
+    "project_id": "braintrainhcmiu",
+    "storage_bucket": "braintrainhcmiu.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1016528017147:android:36871115a5ee8d3733025e",
+        "android_client_info": {
+          "package_name": "com.example.braintrainhcmiu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKvRta17SX9Hfv0i-Z7zd6NLIq8_VoEYU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
