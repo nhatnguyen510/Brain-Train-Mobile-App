@@ -1,19 +1,16 @@
 package com.example.braintrainhcmiu
 
-import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.example.braintrainhcmiu.databinding.ActivityMainBinding
-import com.example.braintrainhcmiu.databinding.SignInBinding
+import com.example.braintrainhcmiu.fragments.HomeFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,37 +32,17 @@ class MainActivity : AppCompatActivity() {
 
     mAuth = FirebaseAuth.getInstance()
 
-
     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
       .requestEmail()
       .build()
 
     mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
 
+    val account = GoogleSignIn.getLastSignedInAccount(this)
 
-    val textView = binding.textView
+    val user = account?.account
 
-    val auth = Firebase.auth
-    val user = auth.currentUser
-
-    if (user != null) {
-      // log the user
-      Log.d(TAG, "onCreate: $user")
-
-      val userName = user.displayName
-      user.toString()
-      textView.text = "Welcome, " + user.toString()
-
-    } else {
-      // Handle the case where the user is not signed in
-    }
-
-
-// Inside onCreate() method
-    val signOutButton = binding.logout
-    signOutButton.setOnClickListener {
-      signOutAndStartSignInActivity()
-    }
+    replaceFragment(HomeFragment())
 
 
   }
@@ -80,6 +57,13 @@ class MainActivity : AppCompatActivity() {
       startActivity(intent)
       finish()
     }
+  }
+
+  private fun replaceFragment(fragment: Fragment) {
+    val fragmentManager = supportFragmentManager
+    val fragmentTransaction = fragmentManager.beginTransaction()
+    fragmentTransaction.replace(R.id.frame_layout, fragment)
+    fragmentTransaction.commit()
   }
 }
 
