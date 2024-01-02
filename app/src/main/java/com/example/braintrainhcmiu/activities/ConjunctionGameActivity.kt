@@ -118,7 +118,7 @@ public class ConjunctionGameActivity : AppCompatActivity() {
     var line: String? = null
     try {
       val reader = BufferedReader(InputStreamReader(assets.open("words.txt")))
-      val random = (Math.random() * 1000).toInt()
+      val random = (Math.random() * 40000).toInt()
       var i = 0
       while (reader.readLine().also { line = it } != null) {
         if (i == random) {
