@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.braintrainhcmiu.database.AppDatabase
 import com.example.braintrainhcmiu.databinding.ActivityMainBinding
 import com.example.braintrainhcmiu.fragments.HomeFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     val user = account?.account
 
     replaceFragment(HomeFragment())
+
 
 
   }
