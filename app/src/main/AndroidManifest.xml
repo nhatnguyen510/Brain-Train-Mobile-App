@@ -4,7 +4,7 @@
 
     <application
         android:name=".BrainTrainApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -60,6 +60,14 @@
 
         <activity
             android:name=".activities.CompareGameActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
+        <activity
+            android:name=".activities.FindOperatorGameActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

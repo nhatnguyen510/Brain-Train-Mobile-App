@@ -5,16 +5,20 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.braintrainhcmiu.DAO.CompareMathGameDAO
+import com.example.braintrainhcmiu.DAO.FindOperatorGameDAO
 import com.example.braintrainhcmiu.DAO.UserDAO
 import com.example.braintrainhcmiu.data.CompareMathGame
+import com.example.braintrainhcmiu.data.FindOperatorGame
 import com.example.braintrainhcmiu.data.User
 
 
-@Database(entities = arrayOf(User::class, CompareMathGame::class), version = 1, exportSchema = false)
+@Database(entities = [User::class, CompareMathGame::class, FindOperatorGame::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDAO
 
     abstract fun compareMathGameDao(): CompareMathGameDAO
+
+    abstract fun findOperatorGameDao(): FindOperatorGameDAO
 
     companion object {
         @Volatile
