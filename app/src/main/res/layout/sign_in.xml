@@ -11,39 +11,19 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Email and Password Input Fields -->
-        <EditText
-            android:id="@+id/editTextEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Email" />
-
-        <EditText
-            android:id="@+id/editTextPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Password"
-            android:inputType="textPassword" />
-
-        <!-- Sign In Button -->
-        <Button
-            android:id="@+id/buttonSignIn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Sign In" />
-
-        <!-- Or Separator -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Or" />
+        <ImageView
+            android:id="@+id/brainTrainImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="287dp"
+            android:padding="24dp"
+            android:src="@drawable/logo" />
 
         <!-- Google Sign In Button -->
         <com.google.android.gms.common.SignInButton
             android:id="@+id/googleSignInButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            />
 
     </LinearLayout>
 </layout>

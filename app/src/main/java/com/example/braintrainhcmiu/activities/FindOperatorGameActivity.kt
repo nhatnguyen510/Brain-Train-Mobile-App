@@ -47,13 +47,10 @@ public class FindOperatorGameActivity : AppCompatActivity() {
 
   var timeLeft: Long = START_TIMER.toLong()
   private var count = 0
-  private var point1 = 0
-  private var point2: Int = 0
-  private var point3: Int = 0
+
 
   private var level = 0
   private var score = 0
-  private val text: String? = null
   private lateinit var currentQuestion: FindOperatorGame
   lateinit var numbers: ArrayList<Int>
 
@@ -80,7 +77,9 @@ public class FindOperatorGameActivity : AppCompatActivity() {
 
     initializeViews()
 
-    gameStart()
+    initializeListener()
+
+    getQuestions()
 
   }
 
@@ -104,7 +103,50 @@ public class FindOperatorGameActivity : AppCompatActivity() {
 
   }
 
+  private fun initializeListener() {
+    Option1?.setOnClickListener {
+      clickOption1(it)
+    }
+
+    Option2?.setOnClickListener {
+      clickOption2(it)
+    }
+
+    Option3?.setOnClickListener {
+      clickOption3(it)
+    }
+
+    Option4?.setOnClickListener {
+      clickOption4(it)
+    }
+
+    Option5?.setOnClickListener {
+      clickOption5(it)
+    }
+
+    Option6?.setOnClickListener {
+      clickOption6(it)
+    }
+
+
+  }
+
   private fun gameStart() {
+
+    LevelTextView?.text = "Level $level"
+
+    currentQuestion = questions[count]
+    FindOperatorTextView?.text = "Tìm hai số có tổng bằng ${currentQuestion.target_sum}"
+
+    numbers = ArrayList(currentQuestion.options.split(",").map(String::toInt))
+
+    generate(level)
+
+    UpdateTimer()
+
+  }
+
+  private fun getQuestions() {
     val intentGet = intent
     level = intentGet.getIntExtra("level", 0)
 
@@ -112,7 +154,7 @@ public class FindOperatorGameActivity : AppCompatActivity() {
       findOperatorModel.findOperatorGameQuestions.asFlow().collect { it ->
         // get questions from database and filter based on the level
 
-        questions = when(level) {
+        questions = when (level) {
           10 -> it.filter {
             it.target_sum in 11..99
           }
@@ -127,33 +169,25 @@ public class FindOperatorGameActivity : AppCompatActivity() {
           }
         }
 
-        LevelTextView?.text = "Level $level"
-
-        currentQuestion = questions[count]
-        FindOperatorTextView?.text = "Tìm hai số có tổng bằng ${currentQuestion.target_sum}"
-
-        numbers = ArrayList(currentQuestion.options.split(",").map(String::toInt))
-
-        generate(level)
-
-        UpdateTimer()
+        gameStart()
       }
     }
   }
 
+
   private fun generate(level: Int) {
     val temp = level + 1
-    option1 = numbers!![0]
+    option1 = numbers[0]
     Option1!!.text = Integer.toString(option1)
-    option2 = numbers!![1]
+    option2 = numbers[1]
     Option2!!.text = Integer.toString(option2)
-    option3 = numbers!![2]
+    option3 = numbers[2]
     Option3!!.text = Integer.toString(option3)
-    option4 = numbers!![3]
+    option4 = numbers[3]
     Option4!!.text = Integer.toString(option4)
-    option5 = numbers!![4]
+    option5 = numbers[4]
     Option5!!.text = Integer.toString(option5)
-    option6 = numbers!![5]
+    option6 = numbers[5]
     Option6!!.text = Integer.toString(option6)
 
     Option1!!.setBackgroundColor(-0xc5c872)
@@ -164,7 +198,7 @@ public class FindOperatorGameActivity : AppCompatActivity() {
     Option6!!.setBackgroundColor(-0xc5c872)
   }
 
-  fun ClickOption1(view: View?) {
+  private fun clickOption1(view: View?) {
     if (totalSelect == 0) {
       Option1!!.setBackgroundColor(-0x499b)
       select1 = option1
@@ -179,7 +213,7 @@ public class FindOperatorGameActivity : AppCompatActivity() {
     totalSelect = totalSelect + 1
   }
 
-  fun ClickOption2(view: View?) {
+  private fun clickOption2(view: View?) {
     if (totalSelect == 0) {
       Option2!!.setBackgroundColor(-0x499b)
       select1 = option2
@@ -194,7 +228,7 @@ public class FindOperatorGameActivity : AppCompatActivity() {
     totalSelect = totalSelect + 1
   }
 
-  fun ClickOption3(view: View?) {
+  private fun clickOption3(view: View?) {
     if (totalSelect == 0) {
       Option3!!.setBackgroundColor(-0x499b)
       select1 = option3
@@ -209,7 +243,7 @@ public class FindOperatorGameActivity : AppCompatActivity() {
     totalSelect = totalSelect + 1
   }
 
-  fun ClickOption4(view: View?) {
+  private fun clickOption4(view: View?) {
     if (totalSelect == 0) {
       Option4!!.setBackgroundColor(-0x499b)
       select1 = option4
@@ -224,7 +258,7 @@ public class FindOperatorGameActivity : AppCompatActivity() {
     totalSelect = totalSelect + 1
   }
 
-  fun ClickOption5(view: View?) {
+  private fun clickOption5(view: View?) {
     if (totalSelect == 0) {
       Option5!!.setBackgroundColor(-0x499b)
       select1 = option5
@@ -239,7 +273,7 @@ public class FindOperatorGameActivity : AppCompatActivity() {
     totalSelect = totalSelect + 1
   }
 
-  fun ClickOption6(view: View?) {
+  private fun clickOption6(view: View?) {
     if (totalSelect == 0) {
       Option6!!.setBackgroundColor(-0x499b)
       select1 = option6
@@ -274,7 +308,7 @@ public class FindOperatorGameActivity : AppCompatActivity() {
     }.start()
   }
 
-  fun pauseTimer() {
+  private fun pauseTimer() {
     timer!!.cancel()
   }
 
@@ -282,7 +316,7 @@ public class FindOperatorGameActivity : AppCompatActivity() {
     FindOperatorTimeTextView!!.text = "Bạn còn: $timeLeft giây"
   }
 
-  fun updateScore(score: Int) {
+  private fun updateScore(score: Int) {
     FindOperatorScoreTextView!!.text = "Điểm: $score"
   }
 
@@ -297,7 +331,7 @@ public class FindOperatorGameActivity : AppCompatActivity() {
     Option6!!.isClickable = false
   }
 
-  fun gameEnd() {
+  private fun gameEnd() {
     FindOperatorCompleteNotiTextView!!.visibility = View.VISIBLE
     FindOperatorCompleteNotiTextView!!.text = "Hoàn Thành"
     resultButton!!.visibility = View.VISIBLE
@@ -315,12 +349,12 @@ public class FindOperatorGameActivity : AppCompatActivity() {
     finish()
   }
 
-  fun checkSelect() {
-    var esimatedSum = select1 + select2
+  private fun checkSelect() {
+    var estimatedSum = select1 + select2
     Log.d(TAG, select1.toString())
     Log.d(TAG, select2.toString())
 
-    if (esimatedSum == currentQuestion.target_sum) {
+    if (estimatedSum == currentQuestion.target_sum) {
       Toast.makeText(this@FindOperatorGameActivity, "Câu trả lời Đúng!", Toast.LENGTH_SHORT).show()
       totalSelect = -1
       pauseTimer()

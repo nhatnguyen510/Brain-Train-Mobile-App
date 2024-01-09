@@ -15,7 +15,6 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
-
 class SignInActivity : AppCompatActivity() {
   private lateinit var binding: SignInBinding
   private lateinit var mGoogleSignInClient: GoogleSignInClient
@@ -30,11 +29,7 @@ class SignInActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
 
     binding = SignInBinding.inflate(layoutInflater)
-
     setContentView(binding.root)
-
-    // Configure sign-in to request the user's ID, email address, and basic
-    // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
 
     binding.googleSignInButton.setOnClickListener {
       signIn()
@@ -46,21 +41,27 @@ class SignInActivity : AppCompatActivity() {
     // Check for existing Google Sign In account, if the user is already signed in
     // the GoogleSignInAccount will be non-null.
     val account = GoogleSignIn.getLastSignedInAccount(this)
+    checkAndHandleSignInAccount(account)
+  }
 
+  private fun initGoogleSignIn() {
+    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build()
+    mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+  }
+
+  private fun checkAndHandleSignInAccount(account: GoogleSignInAccount?) {
     if (account != null) {
       Toast.makeText(this, "Signed in as ${account.displayName}", Toast.LENGTH_SHORT).show()
+      // Check and add user to the database if necessary
+      // ...
+
       startActivity(Intent(this, MainActivity::class.java))
       finish()
     }
   }
 
   private fun signIn() {
-    val gso =
-      GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build()
-
-    // Build a GoogleSignInClient with the options specified by gso.
-    mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
+    initGoogleSignIn()
     val signInIntent = mGoogleSignInClient.signInIntent
     startActivityForResult(signInIntent, RC_SIGN_IN)
   }
@@ -80,19 +81,10 @@ class SignInActivity : AppCompatActivity() {
   private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
     try {
       val user = completedTask.getResult(ApiException::class.java)
-
-      // Signed in successfully, show authenticated UI.
-      Toast.makeText(this, "Signed in as ${user?.displayName}", Toast.LENGTH_SHORT).show()
-      startActivity(Intent(this, MainActivity::class.java))
-      finish()
-
+      checkAndHandleSignInAccount(user)
     } catch (e: ApiException) {
-      // The ApiException status code indicates the detailed failure reason.
-      // Please refer to the GoogleSignInStatusCodes class reference for more information.
       Log.w(TAG, "signInResult:failed code=" + e.statusCode)
-      Toast.makeText(this, "Authentication failed", Toast.LENGTH_SHORT).show()
-
+      Toast.makeText(this, "Authentication failed. Please try again.", Toast.LENGTH_SHORT).show()
     }
   }
-
 }

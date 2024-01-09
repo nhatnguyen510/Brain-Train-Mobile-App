@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">BrainTrainHCMIU</string>
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
     <string name="DangKy">Đăng ký</string>
     <string name="mat_khau">Mật khẩu</string>
     <string name="ngay_sinh">Ngày Sinh</string>
