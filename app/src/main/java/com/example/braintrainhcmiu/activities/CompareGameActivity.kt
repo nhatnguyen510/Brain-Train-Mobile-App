@@ -18,6 +18,9 @@ import com.example.braintrainhcmiu.R
 import com.example.braintrainhcmiu.data.CompareMathGame
 import com.example.braintrainhcmiu.models.CompareMathGameViewModel
 import com.example.braintrainhcmiu.models.CompareMathGameViewModelFactory
+import com.example.braintrainhcmiu.models.UserViewModel
+import com.example.braintrainhcmiu.models.UserViewModelFactory
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -45,6 +48,14 @@ class CompareGameActivity : AppCompatActivity() {
 
   private val compareModel: CompareMathGameViewModel by viewModels {
     CompareMathGameViewModelFactory((application as BrainTrainApplication).compareMathGameRepository)
+  }
+
+  private val userViewModel: UserViewModel by viewModels {
+    UserViewModelFactory((application as BrainTrainApplication).userRepository)
+  }
+
+  companion object {
+    private const val TAG = "CompareGameActivity"
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -185,11 +196,36 @@ class CompareGameActivity : AppCompatActivity() {
     compareScoreTextView.text = "Điểm: $score"
   }
 
+  private fun updateScoreToDatabase(score: Int) {
+    val account = GoogleSignIn.getLastSignedInAccount(this@CompareGameActivity)
+
+    Log.d(TAG, "account: ${account?.id.hashCode()}")
+
+    val user = userViewModel.getUserAsync(account?.id.hashCode()!!)
+
+    Log.d(TAG, "user: $user")
+
+    if (user != null) {
+      // Update score if it is higher than the current score
+      if (score > user.compareScore) {
+        userViewModel.updateCompareScore(account?.id.hashCode(), score)
+      }
+    } else {
+      Log.d(TAG, "user is null")
+    }
+  }
+
   private fun gameStop() {
     compareCompleteNotiTextView.visibility = View.VISIBLE
     resultButton.visibility = View.VISIBLE
     expression1Btn.isClickable = false
     expression2Btn.isClickable = false
+
+    // clear timer
+    pauseTimer()
+
+    // Update score to database
+    updateScoreToDatabase(score)
   }
 
   override fun onBackPressed() {
@@ -207,6 +243,9 @@ class CompareGameActivity : AppCompatActivity() {
 
     // clear timer
     pauseTimer()
+
+    // Update score to database
+    updateScoreToDatabase(score)
   }
 
   private fun back() {

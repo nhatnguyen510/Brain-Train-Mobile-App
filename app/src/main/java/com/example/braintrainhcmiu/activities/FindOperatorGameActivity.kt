@@ -17,6 +17,9 @@ import com.example.braintrainhcmiu.R
 import com.example.braintrainhcmiu.data.FindOperatorGame
 import com.example.braintrainhcmiu.models.FindOperatorGameViewModel
 import com.example.braintrainhcmiu.models.FindOperatorGameViewModelFactory
+import com.example.braintrainhcmiu.models.UserViewModel
+import com.example.braintrainhcmiu.models.UserViewModelFactory
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import kotlinx.coroutines.launch
 
 public class FindOperatorGameActivity : AppCompatActivity() {
@@ -62,6 +65,10 @@ public class FindOperatorGameActivity : AppCompatActivity() {
 
   private val findOperatorModel: FindOperatorGameViewModel by viewModels {
     FindOperatorGameViewModelFactory((application as BrainTrainApplication).findOperatorGameRepository)
+  }
+
+  private val userViewModel: UserViewModel by viewModels {
+    UserViewModelFactory((application as BrainTrainApplication).userRepository)
   }
 
   private lateinit var questions: List<FindOperatorGame>
@@ -320,6 +327,25 @@ public class FindOperatorGameActivity : AppCompatActivity() {
     FindOperatorScoreTextView!!.text = "Điểm: $score"
   }
 
+  private fun updateScoreToDatabase(score: Int) {
+    val account = GoogleSignIn.getLastSignedInAccount(this@FindOperatorGameActivity)
+
+    Log.d(TAG, "account: ${account?.id.hashCode()}")
+
+    val user = userViewModel.getUserAsync(account?.id.hashCode()!!)
+
+    Log.d(TAG, "user: $user")
+
+    if (user != null) {
+      // Update score if it is higher than the current score
+      if (score > user.findOperatorScore) {
+        userViewModel.updateFindOperatorScore(account?.id.hashCode(), score)
+      }
+    } else {
+      Log.d(TAG, "user is null")
+    }
+  }
+
   fun gameStop() {
     FindOperatorCompleteNotiTextView!!.visibility = View.VISIBLE
     resultButton!!.visibility = View.VISIBLE
@@ -329,6 +355,12 @@ public class FindOperatorGameActivity : AppCompatActivity() {
     Option4!!.isClickable = false
     Option5!!.isClickable = false
     Option6!!.isClickable = false
+
+    // clear timer
+    pauseTimer()
+
+    // Update score to database
+    updateScoreToDatabase(score)
   }
 
   private fun gameEnd() {
@@ -341,6 +373,12 @@ public class FindOperatorGameActivity : AppCompatActivity() {
     Option4!!.isClickable = false
     Option5!!.isClickable = false
     Option6!!.isClickable = false
+
+    // clear timer
+    pauseTimer()
+
+    // Update score to database
+    updateScoreToDatabase(score)
   }
 
   override fun onBackPressed() {

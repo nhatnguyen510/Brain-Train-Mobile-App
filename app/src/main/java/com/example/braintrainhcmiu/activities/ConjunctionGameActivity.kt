@@ -11,9 +11,16 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
+import androidx.lifecycle.lifecycleScope
+import com.example.braintrainhcmiu.BrainTrainApplication
 import com.example.braintrainhcmiu.R
+import com.example.braintrainhcmiu.models.UserViewModel
+import com.example.braintrainhcmiu.models.UserViewModelFactory
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import kotlinx.coroutines.launch
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -41,6 +48,10 @@ public class ConjunctionGameActivity : AppCompatActivity() {
   private var tryAgainButton: AppCompatButton? = null
   private var submitConjunctionWordButton: AppCompatButton? = null
   private var editConjunctionWordAnswer: EditText? = null
+
+  private val userViewModel: UserViewModel by viewModels {
+    UserViewModelFactory((application as BrainTrainApplication).userRepository)
+  }
 
   companion object {
     private const val TAG = "ConjunctionGameActivity"
@@ -151,6 +162,8 @@ public class ConjunctionGameActivity : AppCompatActivity() {
         tryAgainButton!!.setOnClickListener {
           tryAgain(it)
         }
+
+        updateScoreToDatabase(score)
       }
     }.start()
 
@@ -165,6 +178,24 @@ public class ConjunctionGameActivity : AppCompatActivity() {
     txtConjunctionWordScore!!.text = "Điểm: $score"
   }
 
+  private fun updateScoreToDatabase(score: Int) {
+    val account = GoogleSignIn.getLastSignedInAccount(this@ConjunctionGameActivity)
+
+    Log.d(TAG, "account: ${account?.id.hashCode()}")
+
+    val user = userViewModel.getUserAsync(account?.id.hashCode()!!)
+
+    Log.d(TAG, "user: $user")
+
+    if (user != null) {
+      // Update score if it is higher than the current score
+      if (score > user.conjunctionScore) {
+        userViewModel.updateConjunctionScore(account?.id.hashCode(), score)
+      }
+    } else {
+      Log.d(TAG, "user is null")
+    }
+  }
 
   @Throws(IOException::class)
   fun submit(view: View?) {

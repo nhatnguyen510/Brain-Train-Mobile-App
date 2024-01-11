@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -15,6 +16,10 @@ import androidx.fragment.app.Fragment
 import com.example.braintrainhcmiu.database.AppDatabase
 import com.example.braintrainhcmiu.databinding.ActivityMainBinding
 import com.example.braintrainhcmiu.fragments.HomeFragment
+import com.example.braintrainhcmiu.models.FindOperatorGameViewModel
+import com.example.braintrainhcmiu.models.FindOperatorGameViewModelFactory
+import com.example.braintrainhcmiu.models.UserViewModel
+import com.example.braintrainhcmiu.models.UserViewModelFactory
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -36,6 +41,10 @@ class MainActivity : AppCompatActivity() {
   private lateinit var navHeaderEmail: TextView
 
   private lateinit var actionBarToggle: ActionBarDrawerToggle
+
+  private val userViewModel: UserViewModel by viewModels {
+    UserViewModelFactory((application as BrainTrainApplication).userRepository)
+  }
 
   companion object {
     private const val TAG = "MainActivity"

@@ -21,14 +21,15 @@ import com.example.braintrainhcmiu.database.AppDatabase
 import com.example.braintrainhcmiu.fragments.HomeFragment
 import com.example.braintrainhcmiu.models.CompareMathGameViewModel
 import com.example.braintrainhcmiu.models.CompareMathGameViewModelFactory
+import com.example.braintrainhcmiu.models.UserViewModel
+import com.example.braintrainhcmiu.models.UserViewModelFactory
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
 
 public class MathActivity : AppCompatActivity() {
-  var findOperatorScore: TextView? = null
-  var compareScore: TextView? = null
-  var findOperatorProgress: TextView? = null
-  var compareProgress: TextView? = null
+  private lateinit var findOperatorScore: TextView
+  private lateinit var compareScore: TextView
   var findOperatorCardView: CardView? = null
   var compareCardView: CardView? = null
   var findOperatorCompleted: ImageView? = null
@@ -40,6 +41,10 @@ public class MathActivity : AppCompatActivity() {
   var gameOneGuide: String? = null
   var gameTwoGuide: String? = null
 
+  private val userViewModel: UserViewModel by viewModels {
+    UserViewModelFactory((application as BrainTrainApplication).userRepository)
+  }
+
   companion object {
     private const val TAG = "MathActivity"
   }
@@ -50,8 +55,6 @@ public class MathActivity : AppCompatActivity() {
     findOperatorCardView = findViewById(R.id.findOperatorCardView)
     findOperatorScore = findViewById(R.id.findOperatorScore)
     compareScore = findViewById(R.id.compareScore)
-    findOperatorProgress = findViewById(R.id.findOperatorProgress)
-    compareProgress = findViewById(R.id.compareProgress)
     compareCardView = findViewById(R.id.compareCardView)
     findOperatorCompleted = findViewById(R.id.findOperatorCompleted)
     compareCompleted = findViewById(R.id.compareComplete)
@@ -64,6 +67,15 @@ public class MathActivity : AppCompatActivity() {
     findOperatorGuideButton?.setVisibility(if (gameOneGuide!!.isEmpty()) View.VISIBLE else View.INVISIBLE)
     compareGuideButton?.setVisibility(if (gameTwoGuide!!.isEmpty()) View.VISIBLE else View.INVISIBLE)
 
+    val account = GoogleSignIn.getLastSignedInAccount(this)
+
+    val userId = account!!.id.hashCode()
+
+    val compareScore: Int = userViewModel.getUserAsync(userId).compareScore
+    val findOperatorScore: Int = userViewModel.getUserAsync(userId).findOperatorScore
+
+    this.compareScore.text = "Điểm của bạn: $compareScore"
+    this.findOperatorScore.text = "Điểm của bạn: $findOperatorScore"
 
     compareCardView?.setOnClickListener(View.OnClickListener {
       val intent = Intent(this@MathActivity, CompareGameActivity::class.java)

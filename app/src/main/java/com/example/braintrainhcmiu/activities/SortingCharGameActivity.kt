@@ -10,9 +10,14 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
+import com.example.braintrainhcmiu.BrainTrainApplication
 import com.example.braintrainhcmiu.R
+import com.example.braintrainhcmiu.models.UserViewModel
+import com.example.braintrainhcmiu.models.UserViewModelFactory
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
@@ -44,6 +49,10 @@ public class SortingCharGameActivity : AppCompatActivity() {
   private var txtLanguageCompleteGame: TextView? = null
   var submitButton: AppCompatButton? = null
   private var editAnswer: EditText? = null
+
+  private val userViewModel: UserViewModel by viewModels {
+    UserViewModelFactory((application as BrainTrainApplication).userRepository)
+  }
 
   companion object {
     private const val TAG = "SortingCharGameActivity"
@@ -174,14 +183,30 @@ public class SortingCharGameActivity : AppCompatActivity() {
     txtLanguageCompleteGame?.setText("Điểm của bạn là: $score")
     submitButton?.setEnabled(false)
 
-    getTotalScore()
+    val totalScore = getTotalScore()
 
+    updateScoreToDatabase(totalScore)
   }
 
   // Score section
   private fun updateScore() {
     score += 200
     txtLanguageScore?.setText("Điểm: $score")
+  }
+
+  private fun updateScoreToDatabase(score: Int) {
+    val account = GoogleSignIn.getLastSignedInAccount(this@SortingCharGameActivity)
+
+    val user = userViewModel.getUserAsync(account?.id.hashCode()!!)
+
+    if (user != null) {
+      // Update score if it is higher than the current score
+      if (score > user.sortingCharScore) {
+        userViewModel.updateSortingCharScore(account?.id.hashCode(), score)
+      }
+    } else {
+      Log.d(FindOperatorGameActivity.TAG, "user is null")
+    }
   }
 
   private fun getTotalScore(): Int {
@@ -191,8 +216,8 @@ public class SortingCharGameActivity : AppCompatActivity() {
 
   // Submit button handle:
   fun Submit(view: View?) {
-    val userInput = editAnswer!!.text.toString().lowercase()
-    Log.d("userInput", userInput.toString())
+    val userInput = editAnswer!!.text.toString().lowercase().trim { it <= ' ' }
+    Log.d("userInput", userInput)
     if (userInput == correctWord) {
       timer!!.cancel()
       getTimeRes()

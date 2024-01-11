@@ -4,8 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.example.braintrainhcmiu.data.User
 import com.example.braintrainhcmiu.databinding.SignInBinding
+import com.example.braintrainhcmiu.models.UserViewModel
+import com.example.braintrainhcmiu.models.UserViewModelFactory
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -19,6 +23,10 @@ class SignInActivity : AppCompatActivity() {
   private lateinit var binding: SignInBinding
   private lateinit var mGoogleSignInClient: GoogleSignInClient
   private lateinit var auth: FirebaseAuth
+
+  private val userViewModel: UserViewModel by viewModels {
+    UserViewModelFactory((application as BrainTrainApplication).userRepository)
+  }
 
   companion object {
     private const val RC_SIGN_IN = 9001
@@ -53,7 +61,25 @@ class SignInActivity : AppCompatActivity() {
     if (account != null) {
       Toast.makeText(this, "Signed in as ${account.displayName}", Toast.LENGTH_SHORT).show()
       // Check and add user to the database if necessary
-      // ...
+
+      val user = userViewModel.getUser(account.id.hashCode()).value
+
+      Log.d(TAG, "checkAndHandleSignInAccount: $user")
+
+      if (user == null) {
+        val newUser = User(
+          account.id.hashCode(),
+          account.displayName,
+          account.email,
+          0,
+          0,
+          0,
+          0
+        )
+        userViewModel.insertAll(newUser)
+
+        Log.d(TAG, "checkAndHandleSignInAccount newUser: $newUser")
+      }
 
       startActivity(Intent(this, MainActivity::class.java))
       finish()

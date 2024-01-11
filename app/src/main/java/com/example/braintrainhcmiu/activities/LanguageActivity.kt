@@ -5,11 +5,17 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.cardview.widget.CardView
+import com.example.braintrainhcmiu.BrainTrainApplication
 import com.example.braintrainhcmiu.R
+import com.example.braintrainhcmiu.models.UserViewModel
+import com.example.braintrainhcmiu.models.UserViewModelFactory
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 
 public class LanguageActivity : AppCompatActivity(), View.OnClickListener {
   private lateinit var conjunctionCardView: CardView
@@ -18,19 +24,30 @@ public class LanguageActivity : AppCompatActivity(), View.OnClickListener {
   private lateinit var conjunctionCompleted: ImageView
   private lateinit var sortingCharCompleted: ImageView
 
+  private lateinit var conjunctionScore: TextView
+  private lateinit var sortingCharScore: TextView
+
   private var conjunctionGuideButton: AppCompatButton? = null
   private var sortingCharGuideButton: AppCompatButton? = null
+
+  private val userViewModel: UserViewModel by viewModels {
+    UserViewModelFactory((application as BrainTrainApplication).userRepository)
+  }
 
   @Override
   protected override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_language)
 
+
     conjunctionCardView = findViewById<CardView>(R.id.conjunctionCardView)
     sortingCharCardView = findViewById<CardView>(R.id.sortingCharCardView)
 
     conjunctionCompleted = findViewById(R.id.conjunctionComplete)
     sortingCharCompleted = findViewById(R.id.sortingCharComplete)
+
+    conjunctionScore = findViewById(R.id.conjunctionScore)
+    sortingCharScore = findViewById(R.id.sortingCharScore)
 
     conjunctionGuideButton = findViewById(R.id.conjunctionGuideButton)
     sortingCharGuideButton = findViewById(R.id.sortingCharGuideButton)
@@ -57,6 +74,16 @@ public class LanguageActivity : AppCompatActivity(), View.OnClickListener {
     if (sortingChar) {
       sortingCharCompleted.setVisibility(View.VISIBLE)
     }
+
+    val account = GoogleSignIn.getLastSignedInAccount(this)
+
+    val userId = account!!.id.hashCode()
+
+    val conjunctionScore: Int = userViewModel.getUserAsync(userId).conjunctionScore
+    val sortingCharScore: Int = userViewModel.getUserAsync(userId).sortingCharScore
+
+    this.conjunctionScore.text = "Điểm của bạn: $conjunctionScore"
+    this.sortingCharScore.text = "Điểm của bạn: $sortingCharScore"
 
     conjunctionGuideButton!!.setOnClickListener {
       val alert = AlertDialog.Builder(this@LanguageActivity)

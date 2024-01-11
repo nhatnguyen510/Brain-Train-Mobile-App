@@ -9,4 +9,6 @@ class BrainTrainApplication: Application() {
   val compareMathGameRepository by lazy { CompareMathGameRepository(database!!.compareMathGameDao()) }
 
   val findOperatorGameRepository by lazy { FindOperatorGameRepository(database!!.findOperatorGameDao() )}
+
+  val userRepository by lazy { UserRepository(database!!.userDao()) }
 }
