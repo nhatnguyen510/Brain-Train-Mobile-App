@@ -62,7 +62,7 @@ class SignInActivity : AppCompatActivity() {
       Toast.makeText(this, "Signed in as ${account.displayName}", Toast.LENGTH_SHORT).show()
       // Check and add user to the database if necessary
 
-      val user = userViewModel.getUser(account.id.hashCode()).value
+      val user = userViewModel.getUserAsync(account.id.hashCode())
 
       Log.d(TAG, "checkAndHandleSignInAccount: $user")
 
